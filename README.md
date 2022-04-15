@@ -4,4 +4,4 @@ The script uses detection/non-detection data to run a single-species, single-sea
 I have not uploaded data because the raster files required to produce species distribution maps are heavy and GitHub doesn't allow files larger than 25MB.
 Please contact ugyenpenjor.bt@gmail.com to get a copy of the data. 
 The codes are annotated for readability. This model uses the Bayesian approach.
-If you are interested to learn the same model under the maximum likelihood framework (*and to correct for spatial autocorrelation under Bayesian framwork*), please contact the author.
+If you are interested to learn the same model under the maximum likelihood framework (*and to correct for spatial autocorrelation under the Bayesian framwork*), please contact the author.
