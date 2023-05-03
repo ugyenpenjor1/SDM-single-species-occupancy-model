@@ -72,7 +72,7 @@ writeLines(modelText, "Single_species_single_season_model.jags")
 
 
 # Initial values to select optimum step size during MCMC
-inits <- function() list(z = rep(1, length(y1)))
+inits <- function() list(z=rep(1, length(y1)))
 
 # Parameters wanted
 wanted <- c("b0", "bMea", "bCon", "bCti", "bRoa", "bRou", "bSlo", "bSno", "bSno2", "a0", "aWea", "aVeg", 
@@ -101,12 +101,12 @@ orig.pred.Cov <- seq(-640.7336, 475.2769,, 101)
 p.Cov <- (orig.pred.Cov - mean.Cov) / sd.Cov
 p.pred.Cov <- plogis(jagsOut_BM$mean$b0 + jagsOut_BM$mean$bSlo * p.Cov)
 
-plot(orig.pred.Cov, p.pred.Cov, main = "",
-     ylab = expression(paste("Probability of habitat use")), 
-     xlab = "slope position", 
-     ylim = c(0, 1), type = "l", lwd = 0.01, col="grey95", frame.plot = T, axes = F) 
+plot(orig.pred.Cov, p.pred.Cov, main="",
+     ylab=expression(paste("Probability of habitat use")), 
+     xlab="slope position", 
+     ylim=c(0, 1), type="l", lwd=0.01, col="grey95", frame.plot=T, axes=F) 
 
-array.p.pred.Cov <- array(NA, dim = c(length(p.Cov), nsamp))
+array.p.pred.Cov <- array(NA, dim=c(length(p.Cov), nsamp))
 
 for(i in 1:nsamp){
   array.p.pred.Cov[,i] <- plogis(jagsOut_BM$sims.list$b0[i] + 
@@ -117,16 +117,16 @@ sub.set <- sort(sample(1:nsamp, size = 300)) # size changes the # of lines in th
 
 # Plot 95% credible intervals
 for (i in sub.set){
-  matlines(orig.pred.Cov, array.p.pred.Cov[,i], type = "l",
-           lwd = 1.2, col = adjustcolor("steelblue", 0.3))
+  matlines(orig.pred.Cov, array.p.pred.Cov[,i], type="l",
+           lwd=1.2, col=adjustcolor("steelblue", 0.3))
 }
 
 # Plot mean
-lines(orig.pred.Cov, p.pred.Cov, type = "l", lwd = 3, col = "navy")
+lines(orig.pred.Cov, p.pred.Cov, type="l", lwd=3, col="navy")
 
 # Add axes
-axis(side=1,lwd=1, tcl= -0.5)
-axis(side=2,lwd=1, tcl = -0.5)
+axis(side=1, lwd=1, tcl=-0.5)
+axis(side=2, lwd=1, tcl=-0.5)
 
 # Plot species distribution map
 # Calculate occupancy for each pixel of the map
