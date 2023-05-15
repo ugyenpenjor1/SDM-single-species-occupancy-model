@@ -24,7 +24,7 @@ jagsDataL <- list(y=y1, n=n, nSites=length(n),
                   wea=wea, veg=veg)
 str(jagsDataL)
 
-# Species distribution model in BUGS language
+# Occupany model in BUGS language
 
 # JAGS model
 modelText <- "model{
@@ -128,7 +128,7 @@ lines(orig.pred.Cov, p.pred.Cov, type="l", lwd=3, col="navy")
 axis(side=1, lwd=1, tcl=-0.5)
 axis(side=2, lwd=1, tcl=-0.5)
 
-# Plot species distribution map
+# Plot species distribution map (this is the detection-corected map)
 # Calculate occupancy for each pixel of the map
 logit_psi <- with(jagsOut_BM$mean, 
                   b0 + bMea * meadRS + bCon * conRS + bCti * ctiRS + bRoa * roadRS + bRou * roughRS + bSlo * sloRS + bSno2 * snowRS)
