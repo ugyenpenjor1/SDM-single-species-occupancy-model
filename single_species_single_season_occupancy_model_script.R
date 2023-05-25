@@ -31,12 +31,12 @@ modelText <- "model{
   # Likelihood
   for(i in 1:nSites) {
 
-  # Ecological model
+    # Ecological model
     z[i] ~ dbern(psi[i])
       logit(psi[i]) <- b0 + bMea * mea[i] + bCon * con[i] + bCti * cti[i] + bRoa * roa[i] + bRou * roug[i] + bSlo * slo[i] +
                        bSno * sno[i] + bSno2 * sno2[i]
 
-  # Observation model
+    # Observation model
     y[i] ~ dbin(z[i] * p[i], n[i]) 
       logit(p[i]) <- a0 + aWea[wea[i]] + aVeg[veg[i]]
       logLik[i] <- log(psi[i] * dbin(y[i], p[i], n[i]) + step(-y[i]) * (1-psi[i]))
@@ -45,13 +45,13 @@ modelText <- "model{
   # Priors
   # Priors on detection intercept and covariates (broad uniform priors)
   a0 ~ dunif(-10, 10)   
-    aWea[1]  <- 0 # Reference category - sunny weather
+  aWea[1]  <- 0 # Reference category - sunny weather (observations mostly made on sunnay day)
   for (k in 2:4) {
-    aWea[k] ~ dunif(-10,10) 
+    aWea[k] ~ dunif(-10, 10) 
   } 
-    aVeg[1]  <- 0 # Reference category - broadleaf forest (BL)
+  aVeg[1]  <- 0 # Reference category - broadleaf forest (BL): likewise most observation plots in broadleaved forest
   for (k in 2:6) { 
-    aVeg[k] ~ dunif(-10,10) 
+    aVeg[k] ~ dunif(-10, 10) 
   } 
 
   # Priors on occupancy intercept and covariates
@@ -67,17 +67,16 @@ modelText <- "model{
 
   # Derived variable
   Nsite.hat <- sum(z[]) # estimated no. of sites being occupied
-  }"
+  
+}"
 writeLines(modelText, "Single_species_single_season_model.jags")
 
-
 # Initial values to select optimum step size during MCMC
-inits <- function() list(z=rep(1, length(y1)))
+inits <- function() list(z=rep(1, length(y1)))    # initial observations given 1: all observed
 
 # Parameters wanted
 wanted <- c("b0", "bMea", "bCon", "bCti", "bRoa", "bRou", "bSlo", "bSno", "bSno2", "a0", "aWea", "aVeg", 
             "Nsite.hat", "Tobs", "Tsim", "p", "psi", "logLik")
-
 
 # Run the model (increase iteration for publication)           
 (jagsOut_BM <- jags(jagsDataL, inits, wanted, "Single_species_single_season_model.jags", DIC=FALSE, 
@@ -91,49 +90,49 @@ wanted <- c("b0", "bMea", "bCon", "bCti", "bRoa", "bRou", "bSlo", "bSno", "bSno2
 # Plot occupancy vs covariate
 # E.g., slope
 range(slope)
-mean.Cov <- mean(slope, na.rm=T)
-sd.Cov <- sd(slope[!is.na(slope)])
+mean.cov <- mean(slope, na.rm=T)
+sd.cov <- sd(slope[!is.na(slope)])
 
 nsamp <- jagsOut_BM$mcmc.info$n.samples # nsamp = no. of samples 
 
 # Prepare covariate for prediction
-orig.pred.Cov <- seq(-640.7336, 475.2769,, 101)
-p.Cov <- (orig.pred.Cov - mean.Cov) / sd.Cov
-p.pred.Cov <- plogis(jagsOut_BM$mean$b0 + jagsOut_BM$mean$bSlo * p.Cov)
+orig.pred.cov <- seq(-640.7336, 475.2769,, 101)
+p.cov <- (orig.pred.cov - mean.cov) / sd.cov
+p.pred.cov <- plogis(jagsOut_BM$mean$b0 + jagsOut_BM$mean$bSlo * p.cov)
 
-plot(orig.pred.Cov, p.pred.Cov, main="",
+plot(orig.pred.cov, p.pred.cov, main="",
      ylab=expression(paste("Probability of habitat use")), 
      xlab="slope position", 
      ylim=c(0, 1), type="l", lwd=0.01, col="grey95", frame.plot=T, axes=F) 
 
-array.p.pred.Cov <- array(NA, dim=c(length(p.Cov), nsamp))
+array.p.pred.cov <- array(NA, dim=c(length(p.cov), nsamp))
 
 for(i in 1:nsamp){
-  array.p.pred.Cov[,i] <- plogis(jagsOut_BM$sims.list$b0[i] + 
-                                   jagsOut_BM$sims.list$bSlo[i] * p.Cov)
+  array.p.pred.cov[,i] <- plogis(jagsOut_BM$sims.list$b0[i] + 
+                                   jagsOut_BM$sims.list$bSlo[i] * p.cov)
 }
 
 sub.set <- sort(sample(1:nsamp, size = 300)) # size changes the # of lines in the plot
 
 # Plot 95% credible intervals
 for (i in sub.set){
-  matlines(orig.pred.Cov, array.p.pred.Cov[,i], type="l",
+  matlines(orig.pred.cov, array.p.pred.cov[,i], type="l",
            lwd=1.2, col=adjustcolor("steelblue", 0.3))
 }
 
 # Plot mean
-lines(orig.pred.Cov, p.pred.Cov, type="l", lwd=3, col="navy")
+lines(orig.pred.cov, p.pred.cov, type="l", lwd=3, col="navy")
 
 # Add axes
 axis(side=1, lwd=1, tcl=-0.5)
 axis(side=2, lwd=1, tcl=-0.5)
 
-# Plot species distribution map (this is the detection-corected map)
-# Calculate occupancy for each pixel of the map
+# Prepare species distribution map (this is the detection-corected map)
+# Calculate occupancy for each pixel
 logit_psi <- with(jagsOut_BM$mean, 
                   b0 + bMea * meadRS + bCon * conRS + bCti * ctiRS + bRoa * roadRS + bRou * roughRS + bSlo * sloRS + bSno2 * snowRS)
 
-# Transform into probability scale from logit scale
+# Transform into probability scale from logit scale (constrain values between 0 and 1)
 psiR <- 1/(1 + exp(-logit_psi))
 
 mapPalette <- colorRampPalette(c("grey", "yellow", "orange", "red"))
