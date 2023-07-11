@@ -127,7 +127,7 @@ lines(orig.pred.cov, p.pred.cov, type="l", lwd=3, col="navy")
 axis(side=1, lwd=1, tcl=-0.5)
 axis(side=2, lwd=1, tcl=-0.5)
 
-# Prepare species distribution map (this is the detection-corected map)
+# Prepare species distribution map (this is the detection-corrected map)
 # Calculate occupancy for each pixel
 logit_psi <- with(jagsOut_BM$mean, 
                   b0 + bMea * meadRS + bCon * conRS + bCti * ctiRS + bRoa * roadRS + bRou * roughRS + bSlo * sloRS + bSno2 * snowRS)
@@ -139,7 +139,7 @@ mapPalette <- colorRampPalette(c("grey", "yellow", "orange", "red"))
 plot(psiR, col=mapPalette(100), main="Occupancy probability map of Bhutan takin", axes=FALSE, box=FALSE, legend.shrink=0.35,
      legend.args=list(text="Occupancy probability", side=4, line=-2, font=2))
 
-# Save output for post processing with GIS software (or you can do in R!)
+# Save output for post-processing with GIS software (or you can do it in R!)
 writeRaster(psiR,"takin_psi_prediction.tif") 
 
 ##############################################################################################
