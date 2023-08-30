@@ -1,6 +1,6 @@
 
-# Single-species, single season occupancy model
-# This species distribution model accounts for imperfect detection, hence produces true distribution
+# Single-species, single-season occupancy model
+# This species distribution model accounts for imperfect detection, hence produces a true distribution
 # Ugyen Penjor, 2018 ugyenpenjor.bt@gmail.com
 # Link to relevant document: 10.13140/RG.2.2.31667.91689 
 # Nature Conservation Division, Department of Forests and Park Services, Bhutan
